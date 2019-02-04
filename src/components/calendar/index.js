@@ -4,13 +4,15 @@ import Day from './day'
 
 const MAX_YEAR = 2100;
 const MIN_YEAR = 1900;
-const NUMBER_OF_DAYS_IN_WEEK = 7;
 
+const DAY_OPTIONS = [ 'SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
+const MONTH_OPTIONS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const YEAR_OPTIONS = Array.from({length: MAX_YEAR - MIN_YEAR}, (v, k) => MIN_YEAR + k+1);
+
+const NUMBER_OF_DAYS_IN_WEEK = DAY_OPTIONS.length;
 
 class Calendar extends React.Component{
 
-    month_options = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    year_options =     Array.from({length: MAX_YEAR - MIN_YEAR}, (v, k) => MIN_YEAR + k+1);
 
     state={
         selected_month: 3,
@@ -57,6 +59,27 @@ class Calendar extends React.Component{
         this.setState({selected_year:e.target.value})
     }
 
+    getTable = (all_dates)=>{
+        const table = []
+        for (let i = 0; i < all_dates.length; i++) {
+            const children = []
+            for (let j = 0; j < NUMBER_OF_DAYS_IN_WEEK; j++) {
+                children.push(<td><Day date={all_dates[i+j].date} /></td>)
+            }
+
+            table.push(
+                <tr>
+                    {children}
+                </tr>
+            )
+
+            i = i+NUMBER_OF_DAYS_IN_WEEK -1;
+        }
+
+        return table
+
+    }
+
 
     render(){
         const {selected_year, selected_month} = this.state
@@ -73,7 +96,7 @@ class Calendar extends React.Component{
                     <span>Select Year:</span>
                     <span>
                         <select name="year" onChange={this.handleYearChange} value={selected_year}>
-                            {this.year_options.map((year)=>{
+                            {YEAR_OPTIONS.map((year)=>{
                                 return (
                                     <option value={year} key={year} >{year}</option>
                                 )
@@ -87,7 +110,7 @@ class Calendar extends React.Component{
                     <span>Select Month:</span>
                     <span>
                         <select name="month" onChange={this.handleMonthChange} value={selected_month}>
-                            {this.month_options.map((month, index)=>{
+                            {MONTH_OPTIONS.map((month, index)=>{
                                 return (
                                     <option value={index} key={index} >{month}</option>
                                 )
@@ -101,9 +124,16 @@ class Calendar extends React.Component{
 
                 <div>
                     <table>
-                        <tr>
-                            <td></td>
-                        </tr>
+                        <thead>
+                            <tr>
+                                {DAY_OPTIONS.map((day)=>{
+                                   return (<th> {day} </th>)
+                                })}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {this.getTable(all_dates)}
+                        </tbody>
                     </table>
                 </div>
             </div>
